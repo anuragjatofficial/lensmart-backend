@@ -7,21 +7,21 @@ POST http://localhost:9090/register
 Content-Type: application/json
 
     {
-    "username": "alibaba",
-    "firstname": "ali",
-    "lastname": "baba",
-    "email": "ali@mail.com",
-    "password": "alibaba",
-    "avatar": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/304.jpg"
+      "username": "alibaba",
+      "firstname": "ali",
+      "lastname": "baba",
+      "email": "ali@mail.com",
+      "password": "alibaba",
+      "avatar": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/304.jpg"
     }
 
 ### 
-POST https://lensmart-backend3-0.onrender.com/user/register
+POST  https://lensmart-backend3-0.onrender.com/login
 Content-Type: application/json
 
     {
-      "username": "alibaba",
-      "password": "alibaba"
+      "username": "anurag",
+      "password": "alibaba",
     }
 
 ###
