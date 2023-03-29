@@ -144,10 +144,13 @@ GET http://localhost:9090/posts?_expand=user
 GET http://localhost:9090/recipeCategories
 
 ###
-POST https://lensmart-backend3-0.onrender.com/user/register
+POST https://lensmart-backend3-0.onrender.com/products
 Content-Type: application/json
 
 {
-    "email": "anurag.1101140@gmail.com",
-    "password": "Noida@1234"
+    "brand_name": "Vincent Chase",
+    "title": "Pink Transparent Full Rim Cat Eye Eyeglasses",
+    "size": "Medium"
 }
+
+
