@@ -65870,7 +65870,15 @@
       "name": "Engineering"
     }
   ],
-  "products": [],
+  "products": [
+    {
+    "brand_name": "Vincent Chase",
+    "title": "Pink Transparent Full Rim Cat Eye Eyeglasses",
+    "size": "Medium",
+    "createdAt": 1680078583938,
+    "id": "123"
+  }
+],
   "product_status": [],
   "brands": [],
   "shippings": [],
