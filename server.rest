@@ -142,3 +142,12 @@ GET http://localhost:9090/posts?_expand=user
 
 ### Recipe Categories
 GET http://localhost:9090/recipeCategories
+
+###
+POST https://example-mhxy.onrender.com/auth/register
+Content-Type: application/json
+
+{
+    "email": "anurag.1101140@gmail.com",
+    "password": "Noida@1234"
+}
