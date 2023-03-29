@@ -1,123 +1,196 @@
-const fs = require('fs')
-const bodyParser = require('body-parser')
-const jsonServer = require('json-server')
-const jwt = require('jsonwebtoken')
+import dotenv from "dotenv";
+dotenv.config();
 
-const server = jsonServer.create()
-const router = jsonServer.router('./database.json')
-const userdb = JSON.parse(fs.readFileSync('./users.json', 'UTF-8'))
+import jsonServer from "json-server";
+import path from "path";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import ShortUniqueId from "short-unique-id";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { LowSync } from "lowdb";
+import { JSONFileSync } from "lowdb/node";
 
-server.use(bodyParser.urlencoded({extended: true}))
-server.use(bodyParser.json())
-server.use(jsonServer.defaults());
+import protectedRoutesConfig from "./serverConfig.js";
 
-const SECRET_KEY = '123456789'
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const uid = new ShortUniqueId({ length: 10 });
 
-const expiresIn = '1h'
+const dbFile = process.env.DB || 'db.json';
+const serverPort = process.env.REACT_APP_JSON_SERVER_PORT || 9090;
+const staticDirectoryName = process.env.STATIC_FILES || 'server-files';
 
-// Create a token from a payload 
-function createToken(payload){
-  return jwt.sign(payload, SECRET_KEY, {expiresIn})
-}
+const file = path.join(__dirname, dbFile);
+const adapter = new JSONFileSync(file);
+const db = new LowSync(adapter);
 
-// Verify the token 
-function verifyToken(token){
-  return  jwt.verify(token, SECRET_KEY, (err, decode) => decode !== undefined ?  decode : err)
-}
+// db.read();
+// db.data.users.push({ three: "four" });
+// db.write();
 
-// Check if the user exists in database
-function isAuthenticated({email, password}){
-  return userdb.users.findIndex(user => user.email === email && user.password === password) !== -1
-}
+const server = jsonServer.create();
 
-// Register New User
-server.post('/auth/register', (req, res) => {
-  console.log("register endpoint called; request body:");
-  console.log(req.body);
-  const {email, password} = req.body;
-
-  if(isAuthenticated({email, password}) === true) {
-    const status = 401;
-    const message = 'Email and Password already exist';
-    res.status(status).json({status, message});
-    return
-  }
-
-fs.readFile("./users.json", (err, data) => {  
-    if (err) {
-      const status = 401
-      const message = err
-      res.status(status).json({status, message})
-      return
-    };
-
-    // Get current users data
-    var data = JSON.parse(data.toString());
-
-    // Get the id of last user
-    var last_item_id = data.users[data.users.length-1].id;
-
-    //Add new user
-    data.users.push({id: last_item_id + 1, email: email, password: password}); //add some data
-    var writeData = fs.writeFile("./users.json", JSON.stringify(data), (err, result) => {  // WRITE
-        if (err) {
-          const status = 401
-          const message = err
-          res.status(status).json({status, message})
-          return
-        }
-    });
+// foreign key suffix as second parameter to the module. Below code sets it to dummy
+// it fixes delete problem but causes expansion problems.
+const router = jsonServer.router(join(__dirname, dbFile),{
+  foreignKeySuffix: 'dummy'
 });
 
-// Create token for new user
-  const access_token = createToken({email, password})
-  console.log("Access Token:" + access_token);
-  res.status(200).json({access_token})
-})
+const staticDir = path.join(__dirname, staticDirectoryName);
+const middlewares = jsonServer.defaults({static: staticDir});
 
-// Login to one of the users from ./users.json
-server.post('/auth/login', (req, res) => {
-  console.log("login endpoint called; request body:");
-  console.log(req.body);
-  const {email, password} = req.body;
-  if (isAuthenticated({email, password}) === false) {
-    const status = 401
-    const message = 'Incorrect email or password'
-    res.status(status).json({status, message})
-    return
+server.use(middlewares);
+server.use(jsonServer.bodyParser);
+
+// config
+const protectedRoutes = protectedRoutesConfig.protectedRoutes;
+
+// Authorization logic
+server.use((req, res, next) => {
+  let NeedsAuthorization = false;
+
+  for (let i = 0; i < protectedRoutes.length; i++) {
+    let { route, methods } = protectedRoutes[i];
+
+    // if ((route === 'GET' && ))
+
+    if ((req.url).startsWith(route)) {
+      if (methods.includes(req.method)) {
+        NeedsAuthorization = true;
+        break;
+      }
+    }
   }
-  const access_token = createToken({email, password})
-  console.log("Access Token:" + access_token);
-  res.status(200).json({access_token})
-})
 
-server.use(/^(?!\/auth).*$/,  (req, res, next) => {
-  if (req.headers.authorization === undefined || req.headers.authorization.split(' ')[0] !== 'Bearer') {
-    const status = 401
-    const message = 'Error in authorization format'
-    res.status(status).json({status, message})
-    return
+  if (NeedsAuthorization) {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+    if (!authHeader || !token)
+      return res
+        .status(403)
+        .send(
+          "Its a protected route/method. You need an auth token to access it."
+        );
+
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET || "62a798775294eda38d9d5bdb57cfae9d1fff7a550c11c06ef2888fc1af641c09291d17f07f04156356fd86223256fbcc026e791a80a876fe7b14d4ba30ec185d", (err, user) => {
+      if (err)
+        return res
+          .status(403)
+          .send("Some error occurred wile verifying token.");
+      req.user = user;
+      next();
+    });
+  } else {
+    next();
   }
-  try {
-    let verifyTokenResult;
-     verifyTokenResult = verifyToken(req.headers.authorization.split(' ')[1]);
+});
 
-     if (verifyTokenResult instanceof Error) {
-       const status = 401
-       const message = 'Access token not provided'
-       res.status(status).json({status, message})
-       return
-     }
-     next()
-  } catch (err) {
-    const status = 401
-    const message = 'Error access_token is revoked'
-    res.status(status).json({status, message})
+// default id & created at 
+server.use((req, res, next) => {
+  if (req.method === "POST") {
+    req.body.createdAt = Date.now();
   }
-})
 
-server.use(router)
+  if (req.method === "POST" && !req.body.id) {
+    req.body.id = uid();
+  }
 
-server.listen(8000, () => {
-  console.log('Run Auth API Server')
-})
+  if (req.method === "POST" && req.user && !req.body.userId) {
+    req.body.userId = req.user.id;
+  }
+
+  next();
+});
+
+// registration logic
+server.post("/register", (req, res) => {
+  if (
+    !req.body ||
+    !req.body.username ||
+    !req.body.password ||
+    !req.body.email
+  ) {
+    return res
+      .status(400)
+      .send("Bad request, requires username, password & email.");
+  }
+
+  db.read();
+  const users = db.data.users;
+  let largestId = 0;
+  users.forEach((user) => {
+    if (user.id > largestId) largestId = user.id;
+  });
+
+  const hashedPassword = bcrypt.hashSync(req.body.password, 10);
+  const newId = largestId + 1;
+  const newUserData = {
+    username: req.body.username,
+    password: hashedPassword,
+    email: req.body.email,
+    firstname: req.body.firstname || "",
+    lastname: req.body.lastname || "",
+    avatar: req.body.avatar || "",
+    createdAt: Date.now(),
+    id: newId,
+  };
+
+  db.data.users.push(newUserData);
+
+  db.write();
+
+  res.status(201).send(newUserData);
+});
+
+// login/sign in logic
+server.post("/login", (req, res) => {
+  if (!req.body || !req.body.username || !req.body.password) {
+    return res
+      .status(400)
+      .send("Bad request, requires username & password both.");
+  }
+
+  db.read();
+  const users = db.data.users;
+  const user = users.find((u) => u.username === req.body.username);
+  if (user == null) {
+    return res.status(400).send(`Cannot find user: ${req.body.username}`);
+  }
+
+  if (bcrypt.compareSync(req.body.password, user.password)) {
+    // creating JWT token
+    const accessToken = generateAccessToken(user);
+    return res.send({
+      accessToken: accessToken,
+      user: user
+    });
+  } else {
+    res.send("Not allowed, name/password mismatch.");
+  }
+});
+
+function generateAccessToken(user) {
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET || "62a798775294eda38d9d5bdb57cfae9d1fff7a550c11c06ef2888fc1af641c09291d17f07f04156356fd86223256fbcc026e791a80a876fe7b14d4ba30ec185d", { expiresIn: "3h" });
+}
+
+// To modify responses, overwrite router.render method:
+// In this example, returned resources will be wrapped in a body property
+// router.render = (req, res) => {
+//   res.jsonp({
+//     body: res.locals.data,
+//   });
+// };
+
+server.use(router);
+
+let nodeEnv = process.env.NODE_ENV || 'production'
+
+
+const PORT = nodeEnv == 'development' ? `http://localhost:${+serverPort}/` : `PORT: ${+serverPort}`
+
+server.listen(+serverPort, () => {
+  console.log(
+    `JSON Server is running at ${PORT} in ${nodeEnv } ENV.`
+  );
+});

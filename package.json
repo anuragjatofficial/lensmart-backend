@@ -1,27 +1,29 @@
 {
-  "name": "json-server-api",
-  "version": "1.0.0",
-  "description": "Simple Fake API",
-  "main": "main.js",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "author": "ME:)",
-  "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.19.0",
-    "cors": "^2.8.5",
-    "json-serve": "^0.1.0",
-    "json-server": "^0.17.3",
-    "jsonwebtoken": "^9.0.0"
+    "bcrypt": "^5.1.0",
+    "config": "^3.3.8",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "json-server": "^0.17.0",
+    "jsonwebtoken": "^8.5.1",
+    "lowdb": "^5.0.5",
+    "short-unique-id": "^4.4.4"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/anuragjatofficial/lensmart-backend.git"
+  "name": "mock-server",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "generate": "node generateData.js > db.json",
+    "dev": "NODE_ENV=development node server.js",
+    "start": "NODE_ENV=production node server.js",
+    "build": "echo \"Hello World\""
   },
-  "keywords": [],
-  "bugs": {
-    "url": "https://github.com/anuragjatofficial/lensmart-backend/issues"
-  },
-  "homepage": "https://github.com/anuragjatofficial/lensmart-backend#readme"
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "type": "module",
+  "devDependencies": {
+    "@faker-js/faker": "^7.6.0",
+    "sharp": "^0.31.2"
+  }
 }
