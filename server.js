@@ -1,23 +1,10 @@
-const jsonServer = require("json-server"); // importing json-server library
-const server = jsonServer.create();
-const router = jsonServer.router("db.json");
-const middlewares = jsonServer.defaults();
-const port = process.env.PORT || 8080; //  chose port from here like 8080, 3001
-
-server.use(middlewares);
-server.use(router);
-
-server.listen(port);
-
-// for jwt 
-
 const fs = require('fs')
 const bodyParser = require('body-parser')
-// const jsonServer = require('json-server')
+const jsonServer = require('json-server')
 const jwt = require('jsonwebtoken')
 
-// const server = jsonServer.create()
-// const router = jsonServer.router('./db.json')
+const server = jsonServer.create()
+const router = jsonServer.router('./database.json')
 const userdb = JSON.parse(fs.readFileSync('./users.json', 'UTF-8'))
 
 server.use(bodyParser.urlencoded({extended: true}))
