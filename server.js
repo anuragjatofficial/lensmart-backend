@@ -104,7 +104,7 @@ server.use((req, res, next) => {
 });
 
 // registration logic
-server.post("/register", (req, res) => {
+server.post("/users", (req, res) => {
   if (
     !req.body ||
     !req.body.username ||

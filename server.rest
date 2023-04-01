@@ -3,7 +3,7 @@ GET http://localhost:9090/users
 # Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG4uc21pdGgiLCJwYXNzd29yZCI6IiQyYiQxMCRVdHZOUURWQ2lCczJZMExjVTJGZS4uODVTVU9ZYk5NRXpsc1NOcFJ1OVh2YXBLWVVrbEMucSIsImVtYWlsIjoiSm9obkBtYWlsLmNvbSIsImZpcnN0bmFtZSI6IkpvaG4iLCJsYXN0bmFtZSI6IlNtaXRoIiwiYXZhdGFyIjoiaHR0cHM6Ly9jbG91ZGZsYXJlLWlwZnMuY29tL2lwZnMvUW1kM1c1RHVoZ0hpckxIR1ZpeGk2Vjc2TGhDa1pVejZwbkZ0NUFKQml5dkh5ZS9hdmF0YXIvMzA0LmpwZyIsImNyZWF0ZWRBdCI6MTY2NzM4NTM1MTMwNiwiaWQiOjUxLCJpYXQiOjE2NjczODUzODEsImV4cCI6MTY2NzQwNjk4MX0.X0CvKdkJ_cpFmdR7KcxszuZFhua3kYT1ocSKGCv276E
 
 ### Register a new user 
-POST  https://lensmart-backend3-0.onrender.com/users
+POST  http://localhost:5000/users
 Content-Type: application/json
 # Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG4uc21pdGgiLCJwYXNzd29yZCI6IiQyYiQxMCRVdHZOUURWQ2lCczJZMExjVTJGZS4uODVTVU9ZYk5NRXpsc1NOcFJ1OVh2YXBLWVVrbEMucSIsImVtYWlsIjoiSm9obkBtYWlsLmNvbSIsImZpcnN0bmFtZSI6IkpvaG4iLCJsYXN0bmFtZSI6IlNtaXRoIiwiYXZhdGFyIjoiaHR0cHM6Ly9jbG91ZGZsYXJlLWlwZnMuY29tL2lwZnMvUW1kM1c1RHVoZ0hpckxIR1ZpeGk2Vjc2TGhDa1pVejZwbkZ0NUFKQml5dkh5ZS9hdmF0YXIvMzA0LmpwZyIsImNyZWF0ZWRBdCI6MTY2NzM4NTM1MTMwNiwiaWQiOjUxLCJpYXQiOjE2NjczODUzODEsImV4cCI6MTY2NzQwNjk4MX0.X0CvKdkJ_cpFmdR7KcxszuZFhua3kYT1ocSKGCv276E
 
@@ -17,12 +17,12 @@ Content-Type: application/json
     }
 
 ### 
-POST https://lensmart-backend3-0.onrender.com/login
+POST http://localhost:5000/login
 Content-Type: application/json
 
   {
     "username": "anurag",
-    "password": "babaji"
+    "password": "alibaba"
   }
 
 ###
