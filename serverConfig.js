@@ -14,4 +14,4 @@ export default {
   ]
 }
 
-// Employees, departments & cats are not protected.
+// Employees, departments , users & cats are not protected.
