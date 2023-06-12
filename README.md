@@ -1,9 +1,5 @@
 # API Construction kit (optimized for cyclic deployment) [DO NOT USE]
 
-# ** IMPORTANT UPDATE **
-
-## Because of recent changes in the cyclic file system settings, the CRUD operations are not working any more with this setup. Please reach out to your associates for an alternative API system.
-
 ## Overview
 This setup is based on JSON-Server. JWT Authentication & Route protection is working out of the box. Several API endpoints has been created for you to create any app of your choice. You are free to add your own endpoints by adding a new key to db.json file. Static files like images may be served from `server-files/images` directory. You can customize route protection from the `serverConfig.js` file. Creating a new entry in db.json file would add a new route for you & you are free to create any fields at runtime. `Id` if not provided will be auto created.
 
@@ -14,25 +10,16 @@ npm i
 
 ## Run the server in development (local) environment
 ```
-npm run dev
+node server.js
 ```
 
 ## Access the server
 ```
-http://localhost:9999/
+[http://localhost:9999/](http://localhost:5000/)
 ```
-
-## How to video
-https://www.loom.com/share/f4d8c58a0e224aebbbd0d20fbe946928
 
 ## Node version
 v16.x
-
-## Deploy to [Cyclic.sh](https://app.cyclic.sh/#/join/vivmagarwal) in 2 minutes.
-https://www.loom.com/share/6af88bcc45b74c19845a83457e792964
-
-## Local server in 2 minutes
-https://www.loom.com/share/a1b18ff5449e41109d8f6b3bb2e46867
 
 ## Resources
 `/cats` 336x
